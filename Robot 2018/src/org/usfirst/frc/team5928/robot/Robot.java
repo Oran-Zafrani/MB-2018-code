@@ -158,11 +158,27 @@ public class Robot extends SampleRobot {
 		m_robotDrive.setSafetyEnabled(false);
 
 	
-				if (data.charAt(0)=='L' && Rstick.getRawAxis(3)>0.5){
+				if (data.charAt(0)=='L' && Rstick.getRawAxis(3)>0.5){   //robot on right side
 
 
 				}
 				else if (data.charAt(0)=='R' && Rstick.getRawAxis(3)>0.5){
+
+
+				}
+				if (data.charAt(0)=='L' && Rstick.getRawAxis(3)<-0.5){    //robot on left side
+
+
+				}
+				else if (data.charAt(0)=='R' && Rstick.getRawAxis(3)<-0.5){
+
+
+				}
+				if (data.charAt(0)=='L' && (Rstick.getRawAxis(3)<0.5 && Rstick.getRawAxis(3)>-0.5)){   // robot on center
+
+
+				}
+				else if (data.charAt(0)=='R' && (Rstick.getRawAxis(3)<0.5 && Rstick.getRawAxis(3)>-0.5)){
 
 
 				}
