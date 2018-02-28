@@ -243,7 +243,7 @@ public class Robot extends SampleRobot {
 			m_robotDrive.arcadeDrive(output, 0);
 		}
 	}
-public void openIntake(){
+public void openIntake(){ 
 		
 		if(flag){ // true if cube inside.
 			
@@ -272,7 +272,7 @@ public void openIntake(){
 		}
 	}
 
-public void throw_cube() {
+public void throw_cube() { //function for shooting the cube
 	if(flag){ // true if cube inside.
 
 		left_sol.set(Value.kReverse);
