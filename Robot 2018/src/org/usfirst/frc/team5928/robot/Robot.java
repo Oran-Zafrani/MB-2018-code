@@ -52,7 +52,7 @@ public class Robot extends SampleRobot {
 	private static final String kCustomAuto = "My Auto";
 
 	
-	private Joystick Rstick = new Joystick(0), Lstick = new Joystick(1), sysjoystic= new Joystick(2);
+	private Joystick Rstick = new Joystick(0), Lstick = new Joystick(1), sysjoystick= new Joystick(2);
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	private String data = DriverStation.getInstance().getGameSpecificMessage();
 	private Ultrasonic ultra = new Ultrasonic(0, 1);
@@ -213,17 +213,19 @@ public class Robot extends SampleRobot {
 					m_robotDrive.tankDrive(-Lstick.getY()*0.7, -Rstick.getY()*0.7);
 
 				
-				if (sysjoystic.getRawButton(3))
-				{
+				if (sysjoystick.getRawButton(3))
 					openIntake();
-				}
+				else if (sysjoystick.getRawButton(4))
+					throw_cube();
+				
+				
 				/* test the tuning of the PID before enabling the robot!! */
 				
-				if (sysjoystic.getRawButton(7)) // opening lift for scale
+				if (sysjoystick.getRawButton(7)) // opening lift for scale
 					pidlift.setSetpoint(999);
-				else if (sysjoystic.getRawButton(10)) //opening lift for switch
+				else if (sysjoystick.getRawButton(10)) //opening lift for switch
 					pidlift.setSetpoint(999);
-				else if (sysjoystic.getRawButton(11)) // closing lift
+				else if (sysjoystick.getRawButton(11)) // closing lift
 					pidlift.setSetpoint(999);
 				
 				
@@ -244,6 +246,7 @@ public class Robot extends SampleRobot {
 public void openIntake(){
 		
 		if(flag){ // true if cube inside.
+			
 			left_intake.set(-0.5);
 			right_intake.set(0.5);
 			Timer.delay(0.5);
@@ -255,7 +258,6 @@ public void openIntake(){
 			flag = false;
 		}
 		else {
-			
 			left_intake.set(0.5);
 			right_intake.set(-0.5);
 			Timer.delay(0.5);
@@ -269,6 +271,22 @@ public void openIntake(){
 			
 		}
 	}
+
+public void throw_cube() {
+	if(flag){ // true if cube inside.
+
+		left_sol.set(Value.kReverse);
+		right_sol.set(Value.kReverse);
+		Timer.delay(0.5);
+		left_intake.set(-0.5);
+		right_intake.set(0.5);
+		Timer.delay(0.5);
+		left_intake.set(0);
+		right_intake.set(0);
+		
+		flag = false;
+	}
+}
 
 	@Override
 	public void test() {
