@@ -57,29 +57,28 @@ public class Robot extends SampleRobot {
 	private String data = DriverStation.getInstance().getGameSpecificMessage();
 	private Ultrasonic ultra = new Ultrasonic(0, 1);
 	private Encoder lift = new Encoder(0, 1);
-	PIDController pidsonic, pidgyro, pidlift;
-	AnalogGyro gyro = new AnalogGyro(0);
+	private PIDController pidsonic, pidgyro, pidlift;
+	private AnalogGyro gyro = new AnalogGyro(0);
 	
-	WPI_TalonSRX canLB = new WPI_TalonSRX(1), 
+	private WPI_TalonSRX canLB = new WPI_TalonSRX(1), 
 				canLF = new WPI_TalonSRX(2), 
 				canRB = new WPI_TalonSRX(3), 
 				canRF = new WPI_TalonSRX(4), 
 				left_intake = new WPI_TalonSRX(5),
 				right_intake = new WPI_TalonSRX(6);
 	
+	private SpeedControllerGroup Lside = new SpeedControllerGroup(canLB, canLF),
+								 Rside = new SpeedControllerGroup(canRB, canRF),
+								 Lift_group = new SpeedControllerGroup(new WPI_TalonSRX(7), new WPI_TalonSRX(8));
 	
-	SpeedControllerGroup Lside = new SpeedControllerGroup(canLB, canLF);
-	SpeedControllerGroup Rside = new SpeedControllerGroup(canRB, canRF);
-	SpeedControllerGroup Lift_group = new SpeedControllerGroup(new WPI_TalonSRX(7), new WPI_TalonSRX(8));
 	
+	private Boolean flag = true;
 	
-	Boolean flag = true;
 
+	private DoubleSolenoid left_sol = new DoubleSolenoid(0, 1), right_sol = new DoubleSolenoid(2, 3);
+	private Compressor comp = new Compressor();
 
-	DoubleSolenoid left_sol = new DoubleSolenoid(0, 1), right_sol = new DoubleSolenoid(2, 3);
-	Compressor comp = new Compressor();
-
-	DifferentialDrive m_robotDrive = new DifferentialDrive(Lside, Rside);
+	private DifferentialDrive m_robotDrive = new DifferentialDrive(Lside, Rside);
 		/**
 		 * This function is run when the robot is first started up and should be)
 		 * used for any initialization code.
@@ -200,7 +199,6 @@ public class Robot extends SampleRobot {
 	@Override
 	public void operatorControl() {
 		m_robotDrive.setSafetyEnabled(true);
-		lift.reset();
 		while (isOperatorControl() && isEnabled()) {
 			// Drive arcade style
 			
@@ -225,8 +223,12 @@ public class Robot extends SampleRobot {
 				else if (sysjoystick.getRawButton(10)) //opening lift for switch
 					pidlift.setSetpoint(999);
 				else if (sysjoystick.getRawButton(11)) // closing lift
-					pidlift.setSetpoint(999);
+					pidlift.setSetpoint(0);
 				
+				
+				Lift_group.set(sysjoystick.getY());
+				
+					
 				
 			// The motors will be updated every 5ms
 			Timer.delay(0.005);
@@ -245,15 +247,16 @@ public class Robot extends SampleRobot {
 public void openIntake(){ 
 		
 		if(flag){ // true if cube inside.
-			
+
+			left_sol.set(Value.kReverse);
+			right_sol.set(Value.kReverse);
+			Timer.delay(0.5);
 			left_intake.set(-0.5);
 			right_intake.set(0.5);
 			Timer.delay(0.5);
 			left_intake.set(0);
 			right_intake.set(0);
 			
-			left_sol.set(Value.kReverse);
-			right_sol.set(Value.kReverse);
 			flag = false;
 		}
 		else {
@@ -274,14 +277,14 @@ public void openIntake(){
 public void throw_cube() { //function for shooting the cube
 	if(flag){ // true if cube inside.
 
-		left_sol.set(Value.kReverse);
-		right_sol.set(Value.kReverse);
-		Timer.delay(0.5);
+		
 		left_intake.set(-0.5);
 		right_intake.set(0.5);
 		Timer.delay(0.5);
 		left_intake.set(0);
 		right_intake.set(0);
+		left_sol.set(Value.kReverse);
+		right_sol.set(Value.kReverse);
 		
 		flag = false;
 	}
