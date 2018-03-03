@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -55,11 +56,11 @@ public class Robot extends SampleRobot {
 	private Joystick Rstick = new Joystick(0), Lstick = new Joystick(1), sysjoystick= new Joystick(2);
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	private String data = DriverStation.getInstance().getGameSpecificMessage();
-	private Ultrasonic ultra = new Ultrasonic(0, 1);
-	private Encoder lift = new Encoder(0, 1);
+	private Ultrasonic ultra = new Ultrasonic(8, 9);
+	private Encoder lift = new Encoder(0, 1), encL = new Encoder(2,3), encR = new Encoder(4, 5);
 	private PIDController pidsonic, pidgyro, pidlift;
 	private AnalogGyro gyro = new AnalogGyro(0);
-	
+	private DigitalInput lift_lim = new DigitalInput(6), cube_lim = new DigitalInput(7); 
 	private WPI_TalonSRX canLB = new WPI_TalonSRX(1), 
 				canLF = new WPI_TalonSRX(2), 
 				canRB = new WPI_TalonSRX(3), 
@@ -225,6 +226,8 @@ public class Robot extends SampleRobot {
 				else if (sysjoystick.getRawButton(11)) // closing lift
 					pidlift.setSetpoint(0);
 				
+				if (lift_lim.get())
+					lift.reset();
 				
 				Lift_group.set(sysjoystick.getY());
 				
@@ -271,13 +274,14 @@ public void openIntake(){
 		else {
 			left_intake.set(0.5);
 			right_intake.set(-0.5);
-			Timer.delay(0.5);
 			left_sol.set(Value.kForward);
 			right_sol.set(Value.kForward);
 			Timer.delay(0.5);
-
+			if (cube_lim.get()) {
 			left_intake.set(0);
 			right_intake.set(0);
+			}
+			
 			flag = true;
 			
 		}
