@@ -90,7 +90,7 @@ public class Robot extends SampleRobot {
 	public Robot() {
 		m_robotDrive.setExpiration(0.1);
 		pidsonic = new PIDController(0.1, 0.001, 0, ultra, new MyPidOutput());
-		pidgyro = new PIDController(0.1, 0.001, 0, gyro, new MyPidOutput());
+		pidgyro = new PIDController(0.1, 0.001, 0, gyro, new MyGyroPidOutput());
 		pidlift = new PIDController(0.1, 0.001, 0, lift, Lift_group );
 		pidlift.setInputRange(0, 999); // change before enabling pid
 	}
@@ -244,6 +244,15 @@ public class Robot extends SampleRobot {
 			m_robotDrive.arcadeDrive(output, 0);
 		}
 	}
+	
+	private class MyGyroPidOutput implements PIDOutput {
+		@Override
+		public void pidWrite(double output) {
+			m_robotDrive.tankDrive(output, -output);
+		}
+	}
+	
+	
 public void openIntake(){ 
 		
 		if(flag){ // true if cube inside.
